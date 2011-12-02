@@ -1,0 +1,5 @@
+Based on the work of Victor Martins (pixelnerve.com/v/), this is  my own implementation of Kinect + Cloth, using Openframeworks. 
+
+The ofxSyphon part in the source is just used to record this video:
+
+http://vimeo.com/33013195
