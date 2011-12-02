@@ -13,14 +13,17 @@
 #include "ofxKMesh.h"
 
 
-#define CLOTH_RES 10
+#define CLOTH_RES 20
 
 class ClothParticle {
 public:
     ofVec3f pos;
     ofVec3f initPos;
+
+
     ofVec3f vel;
     ofVec3f forces;
+
     
     float mass;
     float inverse_mass;
@@ -28,8 +31,8 @@ public:
 
     
     ClothParticle(ofVec3f _pos, float _mass, float _drag);
-    
-    void update();
+ 
+    void update(float dt);
     void addForce(ofVec3f _f);
     
 };

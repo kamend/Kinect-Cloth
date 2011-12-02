@@ -9,7 +9,7 @@ void testApp::setup(){
 	ofSetLogLevel(OF_LOG_VERBOSE);
     
     ofBackground(0,0,0);
-    ofSetFrameRate(60);
+    ofSetFrameRate(30);
     ofEnableSmoothing();
     
     cols = 640 / CLOTH_RES;
@@ -22,7 +22,7 @@ void testApp::setup(){
     oldMouseX = -999;
     oldMouseY = -999;
 
-    tex.loadImage("texture640x480.png");
+    tex.loadImage("texture-brick.png");
     
     shader.load("shader");
     
@@ -47,22 +47,20 @@ void testApp::update(){
         int x = int(i) % cols;
         int y = int(i) / cols;
         
-      
+        if(y == cols-1) continue;
               
         float d = kinect.getDistanceAt(x*CLOTH_RES, y*CLOTH_RES);
         
         if(d >0 && d < 1000) {
             
             d = ofMap(d,0,4000,0,30);
-                     
-            
+                            
             ofVec3f ff = ofVec3f(0,0.0,d);
             ff.normalize();
-            ff *= 5.0;
+            ff *= 3.0;
                   
             controller.particles[i]->addForce(ff);
-            
-        }
+       }
     }
    
     controller.update();
@@ -110,7 +108,9 @@ void testApp::mouseDragged(int x, int y, int button){
 
 //--------------------------------------------------------------
 void testApp::mousePressed(int x, int y, int button){
-
+    ofVec3f f = ofVec3f(0,0,50);
+    
+    controller.particles[200]->addForce(f);
 }
 
 //--------------------------------------------------------------

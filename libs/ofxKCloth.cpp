@@ -12,42 +12,54 @@
 // ClothParicle
 
 ClothParticle::ClothParticle(ofVec3f _pos, float _mass, float _drag = 0.96) {
-
+    
+    
     forces = ofVec3f(0,0,0);
    
     pos = _pos;
     initPos = _pos;
+
     mass = _mass;
     
     if(mass == 0) inverse_mass = 0;
-    else if(mass < 0.001) mass = 0.001;
+    
+    else if(mass < 0.001) mass = 0.0001;
     
     if(mass != 0.0f) inverse_mass = 1.0 / mass;
     
     drag = _drag;
 
+
 }
 //---------------------------
-void ClothParticle::update() {
+void ClothParticle::update(float dt) {
+    
+    // bounds
+    if(pos.z > 200) {
+        ofVec3f getBackForce = ofVec3f(0,0,200-pos.z);
+        getBackForce.normalize();
+        vel += getBackForce;
+    }
+    
     // back to init position force
     ofVec3f backToInitPos = pos - initPos;
     if(backToInitPos.length() > 10) {
         backToInitPos.normalize();
         vel -= backToInitPos;
     }
-    
+ 
     forces *= inverse_mass;
+     
     vel += forces;
+   // vel *= dt*30;
 
     forces.set(0);
  
     vel.limit(5);
-    
+   
     pos += vel;
     vel *= drag;
-    
-    // bound
-  //  if(pos.z > 100) pos.z = 100;
+
 }
 //---------------------------
 void ClothParticle::addForce(ofVec3f _f) {
@@ -71,12 +83,15 @@ void ClothSpring::update() {
     ofVec3f dir = b->pos - a->pos;
     float dist = dir.length();
     if (dist == 0.0) dist = 0.0001; // prevent division by zero
-    float f = (rest_length - dist) * k; // linear force spring
+    
+    float diff = rest_length - dist;
+   
+    float f = diff * k; // linear force spring
+
     dir.normalize();
     
     a->addForce(dir * -f);
     b->addForce(dir * f);
-    
     
 }
 
@@ -106,7 +121,13 @@ void ClothController::init(int _c,int _r) {
         
         ofVec3f pos = ofVec3f( x,y, 0);
         
-        ClothParticle* p = new ClothParticle(pos,(y == 0 || y == rows-1) ? 0 : 1,0.96);
+        float mass = 1;
+        
+        if(y == 0) mass = 0;
+        if(y == (rows-1)*CLOTH_RES) mass = 0; 
+     
+        
+        ClothParticle* p = new ClothParticle(pos,mass,0.96);
 
         particles.push_back(p);
     }
@@ -263,7 +284,7 @@ void ClothController::update() {
     
     // update particles
     for(int i=0;i < particles.size(); i++) {
-        particles[i]->update();
+        particles[i]->update(ofGetLastFrameTime());
     }
 }
 //---------------------------
